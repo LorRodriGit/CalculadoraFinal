@@ -8,10 +8,11 @@ import javax.swing.JButton;
 import vista.Vista;
 
 public class Controlador {
-	Vista vista;
-	JButton [] aux;
-	boolean operar=false;
-	boolean comaActivada=false;
+	private Vista vista;
+	private JButton [] aux;
+	private boolean operar=false;
+	private boolean comaActivada=false;
+	private String memoria;
 	
 	public Controlador(Vista vista2) {
 		vista=vista2;
@@ -23,7 +24,66 @@ public class Controlador {
 		aux=new JButton[vista.getBotoneraCompleta().getVistaOperadores().getBotonesOperadores().length];
 		aux=vista.getBotoneraCompleta().getVistaOperadores().getBotonesOperadores();
 		for (int i = 0; i < aux.length; i++) {
-			
+			aux[i].addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (e.getActionCommand().equals("M+")||e.getActionCommand().equals("M-")||e.getActionCommand().equals("MC")||e.getActionCommand().equals("MR")) {
+						gestionarMemorias(e);
+					}else if (e.getActionCommand().equals("/")||e.getActionCommand().equals("X")||e.getActionCommand().equals("+")||e.getActionCommand().equals("-")) {
+						realizarOperacion(e);
+					}else if (e.getActionCommand().equals("sqrt")) {
+						realizarRaiz();
+					}else if (e.getActionCommand().equals("+/-")) {
+						cambiarSimbolo();
+					}else if (e.getActionCommand().equals("<--")) {
+						eliminarUltimo();
+					}else if (e.getActionCommand().equals("AC")) {
+						estadoInicial();
+					}
+					
+				}
+			});
+		}
+	}
+
+	protected void estadoInicial() {
+		// TODO Auto-generated method stub
+		//comenrtario git
+	}
+
+	protected void eliminarUltimo() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void cambiarSimbolo() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void realizarRaiz() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void realizarOperacion(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void gestionarMemorias(ActionEvent e) {
+		String memo=e.getActionCommand();
+		switch (memo) {
+		case "M+":
+			break;
+		case "M-":
+			break;
+		case "MC":
+			break;
+		case "MR":
+			break;
+		
 		}
 	}
 
