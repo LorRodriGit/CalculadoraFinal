@@ -18,6 +18,7 @@ public class Controlador {
 		vista=vista2;
 		manejarbotonera();
 		manejarOperadores();	
+		//Mensajeillo de clase
 	}
 
 	private void manejarOperadores() {
