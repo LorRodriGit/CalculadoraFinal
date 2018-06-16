@@ -25,8 +25,6 @@ public class Vista extends JFrame {
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setResizable(false);
 		pack();
-		
-		
 	}
 
 	

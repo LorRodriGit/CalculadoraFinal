@@ -13,8 +13,8 @@ public class Controlador {
 	private JButton[] aux;
 	private boolean operar = false;
 	private boolean nuevoDigito = false;
-	private String operacionAnterior = "";
-	private double resultado = 0, memoria = 0, total = 0;
+	private ActionEvent operacionAnterior;
+	private double subtotal = 0, memoria = 0, total = 0, otro = 0;
 
 	public Controlador(Vista vista2) {
 		vista = vista2;
@@ -35,7 +35,15 @@ public class Controlador {
 						gestionarMemorias(e);
 					} else if (e.getActionCommand().equals("/") || e.getActionCommand().equals("X")
 							|| e.getActionCommand().equals("+") || e.getActionCommand().equals("-")) {
-							vista.getTextoPantalla().setText(realizarOperacion(e));
+						if (operacionAnterior == null) {
+							subtotal = Double.valueOf(vista.getTextoPantalla().getText());
+							nuevoDigito=true;
+						} else {
+							vista.getTextoPantalla().setText(realizarOperacion(operacionAnterior,
+									Double.valueOf(vista.getTextoPantalla().getText())));
+						}
+						operacionAnterior = e;
+
 					} else if (e.getActionCommand().equals("√")) {
 						realizarRaiz();
 					} else if (e.getActionCommand().equals("+/-")) {
@@ -44,8 +52,13 @@ public class Controlador {
 						eliminarUltimo();
 					} else if (e.getActionCommand().equals("A/C")) {
 						estadoInicial();
+					} else if (e.getActionCommand().equals("=")) {
+						if (operacionAnterior != null) {
+							vista.getTextoPantalla().setText(realizarOperacion(operacionAnterior,
+									Double.valueOf(vista.getTextoPantalla().getText())));
+							operacionAnterior = null;
+						}
 					}
-
 				}
 			});
 		}
@@ -53,34 +66,32 @@ public class Controlador {
 
 	protected void estadoInicial() {
 		vista.getTextoPantalla().setText("0");
-		operacionAnterior = "=";
 		memoria = 0;
-		resultado = 0;
+		subtotal = 0;
 		nuevoDigito = false;
 		total = 0;
 
 	}
 
 	protected void eliminarUltimo() {
-		if (vista.getTextoPantalla().getText().length()==1) {
+		if (vista.getTextoPantalla().getText().length() == 1) {
 			vista.getTextoPantalla().setText("0");
-		}else {
-			vista.getTextoPantalla().setText(vista.getTextoPantalla().getText()
-				.substring(0, vista.getTextoPantalla().getText().length()-1));
+		} else {
+			vista.getTextoPantalla().setText(
+					vista.getTextoPantalla().getText().substring(0, vista.getTextoPantalla().getText().length() - 1));
 		}
 	}
 
 	protected void cambiarSimbolo() {
 		double valor = Double.parseDouble(vista.getTextoPantalla().getText());
 		if (valor > 0) {
-			//pantalla.setText("-" + pantalla.getText());
-			vista.getTextoPantalla().setText("-"+vista.getTextoPantalla().getText());
+			// pantalla.setText("-" + pantalla.getText());
+			vista.getTextoPantalla().setText("-" + vista.getTextoPantalla().getText());
 			vista.getTextoPantalla().setForeground(Color.RED);
 		} else if (valor < 0) {/// aqui puede tener un simbolo menos
 			if (valor < 0 && vista.getTextoPantalla().getText().contains("-")) {
 				String[] aux = vista.getTextoPantalla().getText().split("-");
 				vista.getTextoPantalla().setText(aux[1]);
-
 			}
 			vista.getTextoPantalla().setText("" + vista.getTextoPantalla().getText());
 			vista.getTextoPantalla().setForeground(Color.BLACK);
@@ -88,71 +99,42 @@ public class Controlador {
 	}
 
 	protected void realizarRaiz() {
-		resultado=Math.sqrt(Double.parseDouble(vista.getTextoPantalla().getText()));
-		operacionAnterior="";
-		vista.getTextoPantalla().setText(String.valueOf(resultado));
-		nuevoDigito=true;
+		subtotal = Math.sqrt(Double.parseDouble(vista.getTextoPantalla().getText()));
+		vista.getTextoPantalla().setText(String.valueOf(subtotal));
+		nuevoDigito = true;
 	}
 
-	protected String realizarOperacion(ActionEvent e) {
-//		String operador=e.getActionCommand();
-//		switch (operador) {
-//		case "+":
-//			resultado+=Double.parseDouble(vista.getTextoPantalla().getText());
-//			break;
-//		case "-":
-//			resultado-=Double.parseDouble(vista.getTextoPantalla().getText());
-//			break;
-//		case "/":
-//			resultado/=Double.parseDouble(vista.getTextoPantalla().getText());
-//			break;
-//		case "X":
-//			resultado*=Double.parseDouble(vista.getTextoPantalla().getText());
-//			break;
-//		case "=":
-//			resultado=Double.parseDouble(vista.getTextoPantalla().getText());
-//			break;
-//}
-//		nuevoDigito=true;
-//		comaActivada=false;
-//		operacionAnterior=operador;
-//		
-	
-		//vista.getTextoPantalla().setText(String.valueOf(resultado));
-		String operador=e.getActionCommand();
-		getResult(operador);
-		if(operador.equals("=")){
-			getResult(operacionAnterior);;
-			
+	protected String realizarOperacion(ActionEvent e, Double operando) {
+		if (operacionAnterior != null) {
+			getResult(operacionAnterior.getActionCommand(), operando);
 		}
-		
-		nuevoDigito=true;
-		operacionAnterior=operador;
-		return String.valueOf(resultado);	
+		return String.valueOf(subtotal);
 	}
 
-	private void getResult(String operador) {
+	private void getResult(String operador, Double operando) {
 		switch (operador) {
 		case "+":
-			resultado+=Double.parseDouble(vista.getTextoPantalla().getText());
+			subtotal += operando;
 			break;
 		case "-":
-			if (resultado==0) {
-			resultado=Double.parseDouble(vista.getTextoPantalla().getText());
-			}else {
-				resultado-=Double.parseDouble(vista.getTextoPantalla().getText());
+			if (subtotal == 0) {
+				subtotal = operando;
+			} else {
+				subtotal -= operando;
 			}
 			break;
 		case "/":
-			if(resultado==0) resultado=1;
-			resultado/=Double.parseDouble(vista.getTextoPantalla().getText());
+			if (subtotal == 0)
+				subtotal = 1;
+			subtotal /= operando;
 			break;
 		case "X":
-			if(resultado==0) resultado=1;
-			resultado*=Double.parseDouble(vista.getTextoPantalla().getText());
+			if (subtotal == 0)
+				subtotal = 1;
+			subtotal *= operando;
 			break;
 		}
-		nuevoDigito=true;
+		nuevoDigito = true;
 	}
 
 	protected void resultado() {
@@ -189,7 +171,7 @@ public class Controlador {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					modificarPantalla(e);
-					nuevoDigito=false;
+					nuevoDigito = false;
 
 				}
 
@@ -199,7 +181,7 @@ public class Controlador {
 
 	protected void controlarComa() {
 		if (!vista.getTextoPantalla().getText().contains(".")) {
-			vista.getTextoPantalla().setText(vista.getTextoPantalla().getText()+".");
+			vista.getTextoPantalla().setText(vista.getTextoPantalla().getText() + ".");
 		}
 
 	}
@@ -208,8 +190,8 @@ public class Controlador {
 		if (e.getActionCommand().equals(".")) {
 			controlarComa();
 		} else if (e.getActionCommand().equals("=")) {
-			vista.getTextoPantalla().setText(realizarOperacion(e));
-			resultado=0;
+			vista.getTextoPantalla().setText(realizarOperacion(e, Double.valueOf(vista.getTextoPantalla().getText())));
+			subtotal = 0;
 		} else if (!vista.getTextoPantalla().getText().equals("0") && !nuevoDigito) {
 			vista.getTextoPantalla().setText(vista.getTextoPantalla().getText() + e.getActionCommand());
 		} else {
