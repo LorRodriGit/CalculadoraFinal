@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 public class VistaOperadores extends JPanel {
-	private String operadores[] = { "<--", "/", "M+", "X", "sqrt", "M-", "+", "-", "MC", "A/C", "+/-", "MR" };
+	private String operadores[] = { "◄", "/", "M+", "X", "√", "M-", "+", "-", "MC", "A/C", "+/-", "MR" };
 	private JButton botonesOperadores[];
 
 	public VistaOperadores() {

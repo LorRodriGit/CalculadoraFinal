@@ -1,5 +1,6 @@
 package controlador;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -9,133 +10,211 @@ import vista.Vista;
 
 public class Controlador {
 	private Vista vista;
-	private JButton [] aux;
-	private boolean operar=false;
-	private boolean comaActivada=false;
-	private String memoria;
-	
+	private JButton[] aux;
+	private boolean operar = false;
+	private boolean nuevoDigito = false;
+	private String operacionAnterior = "";
+	private double resultado = 0, memoria = 0, total = 0;
+
 	public Controlador(Vista vista2) {
-		vista=vista2;
+		vista = vista2;
 		manejarbotonera();
-		manejarOperadores();	
-		//Mensajeillo de clase
+		manejarOperadores();
 	}
 
 	private void manejarOperadores() {
-		aux=new JButton[vista.getBotoneraCompleta().getVistaOperadores().getBotonesOperadores().length];
-		aux=vista.getBotoneraCompleta().getVistaOperadores().getBotonesOperadores();
+		aux = new JButton[vista.getBotoneraCompleta().getVistaOperadores().getBotonesOperadores().length];
+		aux = vista.getBotoneraCompleta().getVistaOperadores().getBotonesOperadores();
 		for (int i = 0; i < aux.length; i++) {
 			aux[i].addActionListener(new ActionListener() {
-				
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (e.getActionCommand().equals("M+")||e.getActionCommand().equals("M-")||e.getActionCommand().equals("MC")||e.getActionCommand().equals("MR")) {
+					if (e.getActionCommand().equals("M+") || e.getActionCommand().equals("M-")
+							|| e.getActionCommand().equals("MC") || e.getActionCommand().equals("MR")) {
 						gestionarMemorias(e);
-					}else if (e.getActionCommand().equals("/")||e.getActionCommand().equals("X")||e.getActionCommand().equals("+")||e.getActionCommand().equals("-")) {
-						realizarOperacion(e);
-					}else if (e.getActionCommand().equals("sqrt")) {
+					} else if (e.getActionCommand().equals("/") || e.getActionCommand().equals("X")
+							|| e.getActionCommand().equals("+") || e.getActionCommand().equals("-")) {
+							vista.getTextoPantalla().setText(realizarOperacion(e));
+					} else if (e.getActionCommand().equals("√")) {
 						realizarRaiz();
-					}else if (e.getActionCommand().equals("+/-")) {
+					} else if (e.getActionCommand().equals("+/-")) {
 						cambiarSimbolo();
-					}else if (e.getActionCommand().equals("<--")) {
+					} else if (e.getActionCommand().equals("◄")) {
 						eliminarUltimo();
-					}else if (e.getActionCommand().equals("AC")) {
+					} else if (e.getActionCommand().equals("A/C")) {
 						estadoInicial();
 					}
-					
+
 				}
 			});
 		}
 	}
 
 	protected void estadoInicial() {
-		// TODO Auto-generated method stub
-		//comenrtario git
+		vista.getTextoPantalla().setText("0");
+		operacionAnterior = "=";
+		memoria = 0;
+		resultado = 0;
+		nuevoDigito = false;
+		total = 0;
+
 	}
 
 	protected void eliminarUltimo() {
-		// TODO Auto-generated method stub
-		
+		if (vista.getTextoPantalla().getText().length()==1) {
+			vista.getTextoPantalla().setText("0");
+		}else {
+			vista.getTextoPantalla().setText(vista.getTextoPantalla().getText()
+				.substring(0, vista.getTextoPantalla().getText().length()-1));
+		}
 	}
 
 	protected void cambiarSimbolo() {
-		// TODO Auto-generated method stub
-		
+		double valor = Double.parseDouble(vista.getTextoPantalla().getText());
+		if (valor > 0) {
+			//pantalla.setText("-" + pantalla.getText());
+			vista.getTextoPantalla().setText("-"+vista.getTextoPantalla().getText());
+			vista.getTextoPantalla().setForeground(Color.RED);
+		} else if (valor < 0) {/// aqui puede tener un simbolo menos
+			if (valor < 0 && vista.getTextoPantalla().getText().contains("-")) {
+				String[] aux = vista.getTextoPantalla().getText().split("-");
+				vista.getTextoPantalla().setText(aux[1]);
+
+			}
+			vista.getTextoPantalla().setText("" + vista.getTextoPantalla().getText());
+			vista.getTextoPantalla().setForeground(Color.BLACK);
+		}
 	}
 
 	protected void realizarRaiz() {
-		// TODO Auto-generated method stub
-		
+		resultado=Math.sqrt(Double.parseDouble(vista.getTextoPantalla().getText()));
+		operacionAnterior="";
+		vista.getTextoPantalla().setText(String.valueOf(resultado));
+		nuevoDigito=true;
 	}
 
-	protected void realizarOperacion(ActionEvent e) {
-		// TODO Auto-generated method stub
+	protected String realizarOperacion(ActionEvent e) {
+//		String operador=e.getActionCommand();
+//		switch (operador) {
+//		case "+":
+//			resultado+=Double.parseDouble(vista.getTextoPantalla().getText());
+//			break;
+//		case "-":
+//			resultado-=Double.parseDouble(vista.getTextoPantalla().getText());
+//			break;
+//		case "/":
+//			resultado/=Double.parseDouble(vista.getTextoPantalla().getText());
+//			break;
+//		case "X":
+//			resultado*=Double.parseDouble(vista.getTextoPantalla().getText());
+//			break;
+//		case "=":
+//			resultado=Double.parseDouble(vista.getTextoPantalla().getText());
+//			break;
+//}
+//		nuevoDigito=true;
+//		comaActivada=false;
+//		operacionAnterior=operador;
+//		
+	
+		//vista.getTextoPantalla().setText(String.valueOf(resultado));
+		String operador=e.getActionCommand();
+		getResult(operador);
+		if(operador.equals("=")){
+			getResult(operacionAnterior);;
+			
+		}
 		
+		nuevoDigito=true;
+		operacionAnterior=operador;
+		return String.valueOf(resultado);	
+	}
+
+	private void getResult(String operador) {
+		switch (operador) {
+		case "+":
+			resultado+=Double.parseDouble(vista.getTextoPantalla().getText());
+			break;
+		case "-":
+			if (resultado==0) {
+			resultado=Double.parseDouble(vista.getTextoPantalla().getText());
+			}else {
+				resultado-=Double.parseDouble(vista.getTextoPantalla().getText());
+			}
+			break;
+		case "/":
+			if(resultado==0) resultado=1;
+			resultado/=Double.parseDouble(vista.getTextoPantalla().getText());
+			break;
+		case "X":
+			if(resultado==0) resultado=1;
+			resultado*=Double.parseDouble(vista.getTextoPantalla().getText());
+			break;
+		}
+		nuevoDigito=true;
+	}
+
+	protected void resultado() {
+		vista.getTextoPantalla().setText(String.valueOf(total));
+
 	}
 
 	protected void gestionarMemorias(ActionEvent e) {
-		String memo=e.getActionCommand();
+		String memo = e.getActionCommand();
 		switch (memo) {
 		case "M+":
+			memoria += Double.parseDouble(vista.getTextoPantalla().getText());
 			break;
 		case "M-":
+			memoria -= Double.parseDouble(vista.getTextoPantalla().getText());
 			break;
 		case "MC":
+			memoria = 0;
 			break;
 		case "MR":
+			vista.getTextoPantalla().setText(String.valueOf(memoria));
 			break;
-		
+
 		}
 	}
 
 	private void manejarbotonera() {
-		aux=new JButton[vista.getBotoneraCompleta().getVistaNumeros().getBotonesNumericos().length];
-		aux=vista.getBotoneraCompleta().getVistaNumeros().getBotonesNumericos();
+		aux = new JButton[vista.getBotoneraCompleta().getVistaNumeros().getBotonesNumericos().length];
+		aux = vista.getBotoneraCompleta().getVistaNumeros().getBotonesNumericos();
 		vista.getTextoPantalla().requestFocus();
 		for (int i = 0; i < aux.length; i++) {
 			aux[i].addActionListener(new ActionListener() {
-				
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					modificarPantalla(e);
-					
-					
-					
-					
+					nuevoDigito=false;
+
 				}
-				
+
 			});
 		}
 	}
 
-	protected void resultado() {
-		// TODO Auto-generated method stub
-		
-	}
-
 	protected void controlarComa() {
-		if (vista.getTextoPantalla().getText().equals("0") && !comaActivada) {
-			vista.getTextoPantalla().setText("0.");
-			comaActivada=true;
-		}else if (!vista.getTextoPantalla().getText().equals("0") && !comaActivada) {
+		if (!vista.getTextoPantalla().getText().contains(".")) {
 			vista.getTextoPantalla().setText(vista.getTextoPantalla().getText()+".");
-			comaActivada=true;
-		}else if (comaActivada) {
-			vista.getTextoPantalla().setText(vista.getTextoPantalla().getText());
 		}
-		
+
 	}
 
 	protected void modificarPantalla(ActionEvent e) {
 		if (e.getActionCommand().equals(".")) {
 			controlarComa();
-		}else if (e.getActionCommand().equals("=")) {
-			resultado();
-		}else if(!vista.getTextoPantalla().getText().equals("0")) {
-			vista.getTextoPantalla().setText(vista.getTextoPantalla().getText()+e.getActionCommand());
-		}else {
+		} else if (e.getActionCommand().equals("=")) {
+			vista.getTextoPantalla().setText(realizarOperacion(e));
+			resultado=0;
+		} else if (!vista.getTextoPantalla().getText().equals("0") && !nuevoDigito) {
+			vista.getTextoPantalla().setText(vista.getTextoPantalla().getText() + e.getActionCommand());
+		} else {
 			vista.getTextoPantalla().setText(e.getActionCommand());
 		}
-		
+
 	}
 }
