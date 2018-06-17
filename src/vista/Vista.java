@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import controlador.Controlador;
+import controlador.ControladorDos;
 
 public class Vista extends JFrame {
 	private JPanel pantalla;
@@ -43,7 +44,7 @@ public class Vista extends JFrame {
 
 
 	public static void main(String[] args) {
-		new Controlador(new Vista());
+		new ControladorDos(new Vista());
 	}
 
 
